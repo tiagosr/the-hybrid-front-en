@@ -1,0 +1,205 @@
+The Hybrid Front
+Translation script by Tiago Rezende
+
+
+Intro
+Card 1
+
+1.
+経済と軍事力の低下した各国が大企業に庇護を求めていく時
+Keizai to gunji-ryoku no teika shita kakkoku ga dai kigyō ni higo o motomete iku toki
+When countries with fragile economies and military forces plea for large corporations' protection
+
+経済：：keizai
+	
+と：to
+軍事：：gunji
+力：りき：ryoku
+	strength
+の：no
+低下した：ていかした：teikashita
+	was lower
+各国：：kakkoku
+	countries
+が：ga
+大：だい：dai
+	big
+企業：きぎょ：kigyou
+	company	
+に：ni
+庇護：ひご：higo
+	protection
+を：wo
+求めて：もとめて：motomete
+	request; wish for; demand; require
+いく：iku
+時：とき：toki
+	hour; time
+
+----
+2.
+A.D. 2012
+
+----
+3.
+[企業援助法]成立
+[Kigyō enjo-hō] seiritsu
+The "Corporate Assistance Act" is established
+
+企業：きぎょ：kigyo
+	company	
+援助：えんじょ：enjo
+法：：ho
+成立：せいりつ：seiritsu
+
+----
+4.
+”企業警察隊”の始まりですある
+”Kigyō keisatsu-tai” no hajimaridesuaru
+"Corporate Police" thus begins
+
+企業：きぎょ：kigyo
+	company	
+警察隊：けいさつたい：keisatsutai
+	police squad
+の：no
+始まりですある：はじまりである：hajimaridearu
+	begins, then
+
+====
+
+Card 2
+
+1.
+22世紀
+中近東のオイルパワーが低下水素エネルギープラントの開発軌道による企業の強大化
+22seiki
+Chūkintō no oirupawā ga teika suiso enerugīpuranto no kaihatsu kidō ni yoru kigyō no tsuyo Taika
+22nd. century
+Oil power in the Middle East strengthens interested corporations as the development of hydrogen energy plants has setbacks
+
+世紀 seiki
+	century
+中近東 chuukintou
+	middle east
+の no
+オイルパワー OIRUPAWA~
+	oil power
+が ga
+低下 teika
+水素 suiso
+エネルギープラント ENERUGI~PURANTO
+の no
+開発 kaihatsu
+	development
+軌道	kidou
+	trajectory
+に ni
+よる yoru
+企業 kigyou
+の no
+強 tsuyo
+大化 taika
+
+====
+
+Card 3
+
+1.
+A.D.2243
+軌道上を中心とした企業群は利権の拡大を求めて、地球側に「軌道企業自治法案」を提示
+Kidō-jō o chūshin to shita kigyō-gun wa riken no kakudai o motomete, chikyū-gawa ni `kidō kigyō jichi hōan' o teiji
+Seeking to expand their reach, a group of corporations based on orbital stations passed the "Orbital Corporation Autonomy Bill" to the population in Earth
+
+2.
+地球側はこれを棄却、企業側権利の縮小と弾圧を宣言
+Chikyū-gawa wa kore o kikyaku, kigyō-gawa kenri no shukushō to dan'atsu o sengen
+Rejecting the move, Earth-side declared restrictions and repressions of the corporations' rights
+
+3.
+A.D.2302
+地球側と軌道企業の紛争”第次軌道戦争「オービタル ウォー」”
+Chikyū-gawa to kidō kigyō no funsō ”dai ichi ji kidō sensō `Ōbitaru u~ō'”
+Conflict arises, and corporations fight "the First Orbital War [ORBITAL WAR]"
+
+4.
+A.D.2309
+”第二次軌道戦争「オービタル ウォー」”勃発する
+”Dai nichi ji kidō sensō `Ōbitaru u~ō'” boppatsu suru
+"Second Orbital World War [ORBITAL WAR]" erupts
+
+====
+
+Card 4
+
+1.
+軌道上の覇権は企業側へ
+Kidō-jō no haken wa kigyō-gawa e
+Hegemony went to the hands of the corporations
+
+2.
+A.D.2307
+軌道企業群は共同組縅として「軌道企業共同体」、”CoCoON”「コクーン」を組縅
+Kidō kigyō-gun wa kyōdō-gumi odoshi to shite `kidō kigyō kyōdōtai', ”CoCoON” `kokūn' o kumi odoshi
+A corporate assembly named CoCoON threatened the "Orbit corporation community"
+
+====
+
+Card 5
+
+1.
+”第二次軌道戦争”に使われた大型兵器の攻勢によって
+”Dai nichi ji kidō sensō” Ni tsukawa reta ōgata heiki no kōsei ni yotte
+When the large-scale weaponry created during the "Second Orbital War" was used
+
+2.
+主要拠点を焦土にされた地球側は
+Shuyō kyoten o shōdo ni sa reta chikyū-gawa wa
+The Earth side had it's bases scorched in flames
+
+3.
+A.D.2315
+コクーン側に条件付き停戦を提示各地に企業側の治安維持軍が駐留、コクーンによる暫定査察会が設られる
+Kokūn-gawa ni jōken-tsuki teisen o teiji kakuchi ni kigyō-gawa no chian iji-gun ga chūryū, kokūn ni yoru zantei sasatsu-kai ga setsurareru
+Corporate security forces stationed around the anouncement of a conditional cease-fire proposed by CoCoON, and a diplomatic meeting is arranged by CoCoON
+
+4.
+A.D.2391
+コクーン指導のもと、”汎地球条約機煹”　”PETO”「ピートウ」が設立
+Kokūn shidō no moto, ”Hiroshi chikyū jōyaku-ki noroshi” ”PETO” `pītō' ga setsuritsu
+Under guidance of CoCoON, "Pan-global treaty machine beacon" "PETO" was founded
+
+5.
+コクーンの飼い犬と化した地球は再び復興への歩みを始めた。。。
+Kokūn no kaiinu to-ka shita chikyū wa futatabi fukkō e no ayumi o hajimeta. . .
+Earth became submitted to CoCoON, and began it's reconstruction work again...
+
+====
+Card 6
+
+1.
+崩壊した地球の物質流通を支えたのは
+Hōkai shita chikyū no busshitsu ryūtsū o sasaeta no wa
+Supported by the collapse of transport of goods around the Earth
+
+2.
+”運び屋“と呼ばれる連中であった！
+”Hakobi-ya“ to yoba reru renchūdeatta!
+People called "mules" started appearing!
+
+===========
+
+Index: History
+
+歴史年表
+Rekishi nenpyō
+History Timeline
+
+20世紀
+san-juu san seiki
+20th. century
+
+１９９８：原油価挌競争における対立、「オールド　オイル　ウオー」勃発化半球の温暧 砂漠化
+Gen'yu-ka 挌 Kyōsō ni okeru tairitsu,`ōrudo oiru uō' boppatsu-ka hankyū no Yutaka 暧 Sabaku-ka
+Conflict heats up around crude oil fountains, "World Oil War" breaks out in the desert
+
