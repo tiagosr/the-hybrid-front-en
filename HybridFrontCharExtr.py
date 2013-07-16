@@ -5,6 +5,13 @@
 # Character Tile Graphics Translator
 #######################################
 
+# turns out that there's two character tile tables in Hybrid Front. One with mixed-width characters, and another, fixed-width one.
+# I happened to extract the fixed-width one, and it isn't what the title screen and index uses.
+
+# The variable-width table is a tilemap which reuses lots of data between characters.
+# it starts around 000CA58E and ends in 000CC706
+# there's a table with big 16x16 uppercase letters (EDCBA) and a cups symbol starting at 000CA4E.
+
 from PIL import Image
 
 # Character tiles start at 0x001845AE in rom, and are 1bpp.

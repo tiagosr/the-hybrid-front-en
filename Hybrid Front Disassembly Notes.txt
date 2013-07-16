@@ -1,0 +1,428 @@
+// "decompilation" notes, in pseudo-C
+
+
+Entry point: 000206
+
+_start:
+000206: // testing if reset is (still) pressed
+	if(! *0x00a10008 || !*0x00a1000c) goto 000292;
+000216: 
+	// load constants from 0x0004aa
+	A5 = 0x000294
+	D5.w = -1 // 8000 @0x000294
+	D6.w = 0x3FFF // 3FFF @0x000296
+	D7.w = 0x0100 // 0100 @0x000298
+	A0 = 0x00A00000 // @00029a
+	A1 = 0x00A11100 // @00029d
+	A2 = 0x00A11200 // @0002a2
+	A3 = 0x00C00000 // @0002a6
+	A4 = 0x00C00004 // @0002aa
+	D0.b = *(A1 - 0x10FF) /* @00a10001 */ & 0x0f
+	if (D0.b != 0) {
+		*(A1 + 0x2f00) = 0x53454741; // write SEGA to *0xA13f00
+	}
+	D0.w = *(A4) // VDPSTATUS dummy read
+	D0 = 0
+	USP = A6 = *(D0)
+	// A5 = 0002ae
+	for(D1 = 0x17; D1 >= 0; D1--) {
+		D5.b = *(A5); A5+=1
+		*(A4).w = D5
+		D5.w += D7
+	}
+	// A5 = 0002c6
+	*(A4) = *(A5); A5 += 4 // VDPCTRL <= 40000080
+	*(A3) = D0 // VDPDATA <= 0
+	*(A1) = D7 // A11100 <= 0100
+	*(A2) = D7 // A11200 <= 0100
+	while(bit(D0 /*0*/, *(A1 /*A11100*/)) != 0) {}
+	// A5 = 0002ca
+	// A0 = a00000
+	for(D2 = 0x25; D2>=0; D2--){
+		*(A0).b = *(A5); A0+=1, A5+=1;
+	}
+	// A5 = 0002f0
+	// A0 = a00026
+	*(A2).w = D0 // A11200 <= 0
+	*(A1).w = D0 // A11100 <= 0
+	*(A2).w = D7 // A11200 <= 0100
+	// D6 = 3fff
+	do { // fill stack region with zeroes
+		A6 -= 2; *(A6) = D0 // 0
+	} while (D6--)
+	// A5 = 0002f0
+	// A4 = VDPCTRL
+	*(A4) = *(A5); A5+=4
+	*(A4) = *(A5); A5+=4
+	for(D3 = 0x013; D3 >= 0; D3--) {
+		*(A3) = D0 // VDPDATA = 0
+	}
+	// A5 = 0002f8
+	*(A4) = *(A5); A5 += 4
+	for(D4 = 0x013; D4 >= 0; D4--) {
+		*(A3) = D0 // VDPDATA <= 0
+	}
+	// A5 = 0002fc
+	for(D5=3; D5>=0; D5--) {
+		*(A3+11).b = *(A5); A5+=1
+	}
+	*(A2) = D0 // A11200 <= 0
+	pop D0-D7/A0-A6 from (A6) // all zeroes
+	SR = 0x2700	
+000292:
+	goto 000300
+
+000294:
+	0x8000 // -1
+	0x3fff
+	0x0100
+	0x00a00000
+	0x00a11100
+	0x00a11200
+	0x00c00000
+	0x00c00004
+0002ae:
+	0x04, 0x14, 0x30, 0x3c // 3
+	0x07. 0x6c, 0x00, 0x00 // 7
+	0x00, 0x00, 0xff, 0x00 // b
+	0x81, 0x37, 0x00, 0x01 // f
+	0x01, 0x00, 0x00, 0xff // 13
+	0xff, 0x00, 0x00, 0x80 // 17
+0002c6:
+	0x40000080
+0002ca:
+	0xaf, 0x01, 0xd9, 0x1f // 3
+	0x11, 0x27, 0x00, 0x21 // 7
+	0x26, 0x00, 0xf9, 0x77 // b
+	0xed, 0xb0, 0xdd, 0xe1 // f
+	0xfd, 0xe1, 0xed, 0x47 // 13
+	0xed, 0x4f, 0xd1, 0xe1 // 17
+	0xf1, 0x08, 0xd9, 0xc1 // 1b
+	0xd1, 0xe1, 0xf1, 0xf9 // 1f
+	0xf3, 0xed, 0x56, 0x36 // 23
+	0xe9, 0xe9 // 25
+0002f0:
+
+000300:
+	(*(VDPDATA))
+	D0.w = *(VDPDATA)
+	nop()
+	//////////////
+
+void 000490() {
+	
+}
+
+void 0006c0() { // looks like a frame idle loop.
+	*(ff0104) = *(ff010e)
+	while(!*(ff0104)) {} // why this? spinning in place to wait for an ISR to update the value? nasty!
+}
+
+void 0006D6() {
+	SR = 0x2700
+	push A6-A0/D7-D0
+	A6 = 0xC00004
+	D0.w = *(FF0104)
+	D0.w &= 0x007C // granularity of dispatch table?
+	A1 = 0x00000ECE
+	A1 = *(A1+D0.w) // is it like a grand dispatch table?
+	(A1)();
+	A0.w = *(FFF432)
+	D0.w = A0
+	if (D0 == 0) goto 000744;
+	D0.b = *(A0 - 0xBD7) // *(*(FFF432) - 0xBD7)
+	*(fff432) -= 1
+	027e62()
+	if(*(A01C0A).b==0) {
+		*(A01C0A).b = D0
+	}
+000720: else {
+		if(*(A01C0B) == 0) {
+			*(A01C0B).b = D0
+		}
+000730:  else {
+			if(*(A01C0C) == 0) {
+				*(A01C0C) = D0
+			}
+		}
+	}
+00073E:
+	027E88()
+	002280()
+	*(FF0104) = 0
+	pop D0-D7/A0-A6
+}
+
+void 00075E() {
+	if(*(ff011e) == 0) {
+		D0 = *(ff0100) | 0x0fff0fff
+		if(D0 == 0x00100044) goto 000DB2;
+	}	
+}
+void 00077E() {
+	D0.w = 0x8100
+	D0.b = *(ff0413) & 0xbf
+	*(A6).w = D0
+	000490()
+	D7 = 0x0f
+	A0 = FFF300
+	A1 = FFF380
+	do {
+		if(*(A0+=4)!=*(A1+=4)) {
+			goto 0007b2
+		}
+	} while(D7--)
+	if(clear_bit(0, *(ff0184))) {
+		goto 0007ba
+	} else {
+		goto 0007ca
+	}
+0007b2:
+	*(ff0184) = 1
+	D1.w = 0xf300
+	D2 = 0
+	D0.w = 0x0080
+	001018()
+	D1.w = 0xf000
+	D2.w = *(ff0442)
+	D0.w = 0x0280
+	0010f6()
+	*(ff0186) += 1
+	D0.w = 0x8100
+	D0.b = *(FF0413) | 0x40
+	*(A6).w = D0
+}
+
+
+000DB2:
+
+000ECE:
+	0000075E
+	0000077E
+	0000077E
+	000007F6
+	00000854
+	0000085C
+	000008E8
+	000089B6
+	00009EBE
+	00000996
+	00000F82
+	00000F82
+	000009D4
+	0002CC34
+	00035e4c
+	00000D82
+	0001c2b8
+	00037ca0
+	0000a00c
+	00002e40
+	00004470
+
+void 001018() {
+	
+}
+void 0010f6() {
+	
+}
+
+// character expansion 1
+// mem regions: 
+//  (A0)
+// 	ff3000 (A1)
+//  ff011e
+// addresses:
+//  (A0) character start
+void 001E76(A0) {
+	push A5/A4/A3/A2/A1/A0/D7/D6/D5/D4/D3/D2/D1/D0
+	A3 = 00001f08 // switch case 0
+	A4 = VDPDATA;
+	set_bit(0, 0xff011e);
+	goto 001e9a;
+001e90: // another entry point?
+	push A5/A4/A3/A2/A1/A0/D7/D6/D5/D4/D3/D2/D1/D0
+	A3 = 00001f1e // switch case 3
+001e9a:
+	A1 = 0xff3000
+	D2.w = (A0)
+	A0 += 2
+	D2.w += D2.w // D2 << 1
+	if(D2 < 0) {
+		A3.w += 0x000A
+	}
+	D2.w << 2
+	A5 = D2
+	D3 = 8
+	D2 = 0
+	D4 = 0
+	001f40();
+	001fc2();
+001EBE:
+	D0 = 8
+	001fcc();
+	if(D1 <= 0x00fc) goto 001EFA;
+	D1 += D1 // D1 << 1
+	D0 = *(A1+D1.w)
+	D0.w = (int16)D0.b // Extend byte to word
+001ED2:
+	001FE0();
+	D1 = *(A1+(uint16)D1+1)
+	D0 = D1
+	D1 &= 0x000F
+	D0 &= 0x00F0
+	D0 >>= 4 // logical
+001EE6:
+	for (; D0 >= 0; D0--){
+		D4 <<= 4 // logical
+		D4 |= D1
+		D3 -= 1
+		if(D3 == 0) {
+			goto *(A3) // switch? 001F08/001f12/001f1e
+001ef0:
+			D4 = 0
+			D3 = 0
+		}
+001EF4:
+	}
+
+001EFA:
+
+001F08:
+	*(A4 /*VDPDATA*/) = D4
+	A5 -= 1
+	D4 = A5
+	if(A5 != 0) goto 001ef0;
+	goto 001f32;
+001f12:
+	D2 ^= D4
+	*(A4 /*VDPDATA*/) = D4
+	A5 -= 1
+	D4 = A5
+	if(A5 != 0) goto 001ef0;
+	goto 001f32;
+001f1e:
+	*(A4 /*VDPDATA*/) = D4
+	A4 += 4 // VDPCTRL
+	A5 -= 1
+	D4 = A5
+	if(A5 != 0) goto 001ef0;
+	goto 001f32;
+001f28:
+	D2 |= D4
+	*(A4 /*VDPDATA*/) = D4
+	A4 += 4 // VDPCTRL
+	A5 -= 1
+	D4 = A5
+	if(A5 != 0) goto 001ef0;
+001f32:
+	clear_bit(0,*(00ff011e))
+	pop D0/D1/D2/D3/D4/D5/D6/D7/A0/A1/A2/A3/A4/A5
+	return;
+}
+
+void 001f40() {
+	D0.b = *(A0)
+	A0 += 1
+001f42:
+	if(D0 == 0xff) return;
+	D7.w = D0.w
+001f4c:
+	D0.b = *(A0)
+	A0 += 1
+	if(D0 >= 0x80) goto 001f42;
+	D1.w = D0.w
+	D7.w &= 0x000f
+	D1.w &= 0x0070
+	D7.w |= D1.w
+	D0 &= 0x000f
+	D1.b = D0.b
+	D1 <<= 8 // logical
+	D7.w |= D1.w
+	D1 = 8 - D0.w
+	if(D1 != 0) goto 001f7a;
+	D0.b = *(A0)
+	A0 += 1
+	D0 <<= 1
+	*(A1+D0.w) = D7
+	goto 001f4c;
+001f7a:
+	D0.b = *(A0)
+	D0.w <<= D1
+	D0.w <<= 1
+	do {
+		D5 = (1 << D1) - 1;
+		*(A1 + D0.w).w = D7.w
+		D0 += 2
+	} while(D5--);
+	goto 001f4c;
+}
+void 001f92() {
+	D5.w << D0
+	D6.w += D0
+	D0.w <<= 1
+	D1.w &= *(0x1f9b + 0x1fee + D0.w)
+	D5.w += D1
+	D0.w = D6 - 8
+	if(D0.w >= 0) {
+		if(D0.w != 0) {
+			D6.w = 0
+			(A0).b = D5
+			A0 += 1
+			return;
+		}
+		D6.w = D5
+		D6.w >> D0
+		(A0).b = D6
+		A0 += 1
+	}
+}
+void 001fb6() {
+	D6.w = ~D6
+	if(D6 != 0) {
+		D6.w += 8
+		D5.w <<= D6
+		(A0).b = D5
+		A0 += 1
+	} else {
+		return 001fc2();
+	}
+}
+void 001fc2() {
+	D5.b = *(A0)
+	A0 += 1
+	D5.w << 8
+	D5.b = *(A0)
+	A0 += 1
+	D6 = 0x10
+}
+void 001fcc() {
+	D7 = D6 - D0
+	D1 = D5 << D7 // logical
+	D0 += D0 // D0 << 1
+	D1 |= *(0x1fd6+0x1fee+D0.w)
+	return;
+}
+
+void 001FE0() {
+	D6 = D6-D0;
+	if (D6 > 9) {
+		D6 += 8;
+		D5 <<= 8;
+		*(A0) = D5;
+		A0 += 1;
+	}
+001fEE:
+	return;
+}
+
+
+
+////
+void 03A280() {
+	A0 = 0x001D657C
+	SR |= 0x0700 // set supervisor bits?
+	*(VDPCTRL) = 0x40000000
+	001E76(); // load 1-bit characters?
+	SR &= 0xF8FF // clear supervisor bits?
+	return;
+}
