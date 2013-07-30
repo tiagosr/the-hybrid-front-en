@@ -6,7 +6,8 @@
 #######################################
 
 # turns out that there's two character tile tables in Hybrid Front. One with mixed-width characters, and another, fixed-width one.
-# I happened to extract the fixed-width one, and it isn't what the title screen and index uses.
+# I happened to extract the fixed-width one, and it is what the in-game text uses.
+# Title screen, index and setup screens use the variable-width text.
 
 # The variable-width table is a tilemap which reuses lots of data between characters.
 # it starts around 000CA58E and ends in 000CC706

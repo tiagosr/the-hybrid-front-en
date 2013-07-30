@@ -12,14 +12,14 @@ _start:
 	D5.w = -1 // 8000 @0x000294
 	D6.w = 0x3FFF // 3FFF @0x000296
 	D7.w = 0x0100 // 0100 @0x000298
-	A0 = 0x00A00000 // @00029a
-	A1 = 0x00A11100 // @00029d
-	A2 = 0x00A11200 // @0002a2
-	A3 = 0x00C00000 // @0002a6
-	A4 = 0x00C00004 // @0002aa
-	D0.b = *(A1 - 0x10FF) /* @00a10001 */ & 0x0f
+	A0 = 0x00A00000 // @00029a // Z80 Address Space start
+	A1 = 0x00A11100 // @00029d // Z80 Bus Request address
+	A2 = 0x00A11200 // @0002a2 // Z80 Reset address
+	A3 = 0x00C00000 // @0002a6 // VDP Data address
+	A4 = 0x00C00004 // @0002aa // VDP Control address
+	D0.b = *(A1 - 0x10FF) /* @00a10001 - Version Register */ & 0x0f
 	if (D0.b != 0) {
-		*(A1 + 0x2f00) = 0x53454741; // write SEGA to *0xA13f00
+		*(A1 + 0x2f00) = 0x53454741; // write SEGA to *0xA14000 - TMSS register
 	}
 	D0.w = *(A4) // VDPSTATUS dummy read
 	D0 = 0
@@ -104,10 +104,16 @@ _start:
 0002f0:
 
 000300:
+	do {
 	(*(VDPDATA))
 	D0.w = *(VDPDATA)
 	nop()
+	} while (D0 & 2);
+	sr |= 1792
+	*(0xa11100).w = 0xff; // a11100 = Z80 bus request
+	*(0xa11200).w = 0xff; // a11200 = Z80 bus reset
 	//////////////
+
 
 void 000490() {
 	
