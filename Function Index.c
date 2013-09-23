@@ -490,3 +490,154 @@ void _005c88();
 
 void _005d18(); // updates VDP
 void _005d64(); // updates VDP
+
+void _005d8c();
+void _005da0();
+void _005db4();
+void _005dec();
+void _005e1a(uint32_t d0) {
+	while (d0-- > 0) {
+		_0006c2();
+	}
+}
+
+void _005e26();
+void _005e3a();
+void _005e6c();
+void _005f42();
+
+uint16_t _005f84[0xf4-0x84];
+
+void _005ff4();
+
+void _0060f2(); // looks like some decompression/decryption routine. gfx decompression?
+
+void _0062b6();
+void _00632c();
+void _006338();
+void _006342();
+void _006352();
+
+uint16_t _006366[16];
+
+void _006386();
+void _0063d4();
+void _006480();
+void _006538();
+void _00666c();
+
+uint16_t _006768[0x94-0x68];
+
+void _006798();
+void _006806();
+void _00682c();
+
+uint16_t _006870[0xc8-0x70];
+
+void _0068ce();
+void _0068de();
+
+uint16_t _006924[0x6c-0x24];
+
+void _006970(); // another decompression routine? loops around itself
+
+void _006a56();
+void _006b26();
+void _006bb8();
+void _006c16() {
+	_ff2000 &= 0xffff0000;
+}
+
+void _006c1e(); // huge ass routine
+
+uint16_t _006e60[0x94-0x60];
+
+void _006e98();
+
+void _006f12();
+
+void _006f2a();
+void _006f62();
+void _007036();
+void _0070ce();
+
+void _007152() {
+	d0.w = (fp[-4] - 32)<<1
+	fp[-4] = _007164[d0.w]
+}
+
+uint16_t _007164[6];
+
+void _007170() {
+	d7 = 0xc0000000;
+	d6.w = 0;
+	d5.w = 127;
+	_0011d6(d5, d6, d7); // this updates vdp
+	a2 = 0xfff300;
+	d0 = 63;
+	do {
+		*(a2++) = 0;
+	} while (d0--);
+}
+
+void _007192() {
+	fp = _ff2220;
+	d0 = 8;
+	d1 = -1;
+	do {
+		*(fp++) = d1
+	} while(d0--);
+}
+
+void _0071a4() {
+	fp = _ff2800;
+	a5 = _0071ba;
+	d7 = 39;
+	do {
+		*(fp++) = *(a5++);
+	} while (d0--);
+}
+
+uint16_t _0071ba[40];
+
+void _007230();
+void _00737e();
+void _0074a2();
+void _0075da();
+void _007654();
+void _00771e();
+void _0077ba();
+
+void _007898() {}
+
+void _00789a(d1, d2, d7, a0, a1) {
+	do{
+		d4 = d1;
+		do {
+			*(a0++) = *(a1++);
+		} while(d4--);
+		a0 += d7;
+	} while(d2--);
+}
+
+void _0078aa(d1, d2, d3, a0, a1) {
+	do{
+		d4 = d1;
+		do {
+			*(a0++) = *(a1++) + d3;
+		} while(d4--);
+		a0 += 116;
+	} while(d2--);
+}
+
+void _0078c0();
+
+uint16_t _00799a[0xc4-0x9a];
+
+void _0079c6(d4, d5) {
+	d0 = _ffc0fc[0];
+	d4 |= 8;
+	d5 += d0;
+	a0 += d0;
+}
+
