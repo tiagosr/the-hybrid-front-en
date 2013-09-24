@@ -24,7 +24,12 @@ void _00065c();
 
 void _00067c();
 void _0006a8();
-void _0006c2();
+
+void _0006c2() { // busy loop while waiting for interrupt?
+	_ff0104[0].w = _ff010e[0]
+	while(_ff0104[0]); 
+}
+
 void _0006d6();
 
 uint16_t _000754[5];
@@ -128,7 +133,11 @@ void _001544();
 
 void _00158e();
 
-void _0015a0();
+void _0015a0() { // updates vdp: set mode from info at _ff0413 disabling display
+	d0.w = 0x8100; // write register 1
+	d0.b = _ff0413[0] & 0xbf; // filter out DISP (d6)
+	VDP_CTRL[0] = d0;
+}
 
 void _0015b6() {
 	for(size_t i = 0; i < 19; i++) {
@@ -189,14 +198,90 @@ void _001d76();
 
 void _001e16();
 void _001e54();
-void _001e76();
-void _001f40();
-void _001fb6();
-void _001fc2();
-void _001fcc();
-void _001fdc();
 
-uint16_t _001ff0[16];
+void _001e76() { // this looks like a decoder
+	push(d0,d1,d2,d3,d4,d5,d6,d7,a0,a1,a3,a4,a5)
+	a3 = _001f08;
+	a4 = VDP_DATA;
+	*_ff011e &= 0xfffffffe; // clear bit 0
+	goto _001e9a:
+
+_001e9a:
+	a1 = _ff3000;
+	d2.w = *(a0); a0 += 2;
+	if(carry_clear(d2.w += d2.w)) {
+		a3 += 10;
+	}
+	d2.w += d2.w;
+	d2.w += d2.w;
+	a5.w = d2;
+	d3 = 8;
+	d2 = 0;
+	d4 = 0;
+	_001f40(d2, d3, d4, a0, a1);
+	_001fc2();
+	d0 = 8;
+	d1 = _001fcc(d0, d5, d6);
+	if(d1.w < 252) {
+		//d1.w += d1.w;
+		d0 = _ff3000[d1.w];
+		sign_extend_word(d0);
+		_001fe0();
+	}// _001efa
+
+	pop(d0,d1,d2,d3,d4,d5,d6,d7,a0,a1,a3,a4,a5)
+}
+
+void _001f40(d2, d3, d4, a0, a1);
+void _001fb6();
+
+void _001fc2(a0) { // reverse a word, result on d5
+	d5.w = *(a0++).b << 8 | *(a0++).b;
+	d6 = 16;
+}
+
+uint16_t _001fcc(d0, d5, d6) { // masks bits for the decoders?
+	d7.w = d6.w - d0.w;
+	d1.w = d5.w;
+	d1.w <<= d7;
+	//d0.w += d0.w;
+	d1.w &= _001ff0_word_mask[d0];
+	return d1.w;
+}
+
+void _001fdc(d0, d5, d6) {
+	d1.w = _001fcc(d0, d5, d6);
+	d0.w <<= 1;
+	return _001fe0(d0, d5, d6); 
+}
+
+void _001fe0(d0, d5, d6) { // shift new byte into D5 for decoding?
+	d6.w -= d0.w;
+	if (d6 < 9) {
+		d6 += 8;
+		asl(d5,8);
+		d5 = *(a0++);
+	}
+}
+
+uint16_t _001ff0_word_mask[16] {
+	0x0001,
+	0x0003,
+	0x0007,
+	0x000f,
+	0x001f,
+	0x003f,
+	0x007f,
+	0x00ff,
+	0x01ff,
+	0x03ff,
+	0x07ff,
+	0x0fff,
+	0x1fff,
+	0x3fff,
+	0x7fff,
+	0xffff
+}
 
 void _002010();
 
@@ -478,7 +563,26 @@ void _005640();
 void _00565c();
 void _0056a4();
 void _0056fc();
-void _005716();
+
+void _005716() { // seems linked to audio stuff, might be music related
+	while (true) {
+		_ff010e[0].w = 24;
+		d0.w = _ff200e[0];
+		if((d0.w & 1) == 0) {
+			a0 = _fff300;
+			a1 = _fff300;
+			_0057b8(a0, a1);
+		}
+		_ff200e[0].w += 1;
+		if(_ff200e[0].w > 16) {
+			_ff200e[0] = 0;
+			return _0015a0();
+		}
+		_0006c2();
+	}
+}
+
+void _00575c();
 void _0057b8();
 void _0057f0();
 
@@ -614,7 +718,8 @@ void _00789a(d1, d2, d7, a0, a1) {
 	do{
 		d4 = d1;
 		do {
-			*(a0++) = *(a1++);
+			*(a0) = *(a1);
+			a0+=4; a1+=4;
 		} while(d4--);
 		a0 += d7;
 	} while(d2--);
@@ -624,7 +729,8 @@ void _0078aa(d1, d2, d3, a0, a1) {
 	do{
 		d4 = d1;
 		do {
-			*(a0++) = *(a1++) + d3;
+			*(a0) = *(a1) + d3;
+			a0+=4; a1+=4;
 		} while(d4--);
 		a0 += 116;
 	} while(d2--);
@@ -632,12 +738,356 @@ void _0078aa(d1, d2, d3, a0, a1) {
 
 void _0078c0();
 
-uint16_t _00799a[0xc4-0x9a];
+uint16_t _00799a[0xc2-0x9a];
 
-void _0079c6(d4, d5) {
-	d0 = _ffc0fc[0];
-	d4 |= 8;
-	d5 += d0;
-	a0 += d0;
+void _0079c2() {
+	d0 = _ff2038[0] * 4;
+	
+	*(a0) += d0;
 }
+
+void _0079d6();
+void _007a08();
+void _007a42();
+void _007a64();
+
+uint16_t _007caa[0xf0 - 0xaa];
+
+void _007cf2();
+void _007dbe();
+void _007e06() {
+	_0079c2();
+	d1 = 0;
+	d1.w = a0[0];
+	d3 = d1;
+	d1 *= 8;
+	a1 = 0x8454e;
+	a1 += d1;
+	d0 = 7;
+	fp = 0xff39bc;
+	_007f40(d0, a1, fp);
+}
+
+void _007e2c() { // z80 communication? sound code?
+	_0079c2();
+	d1 = 0;
+	d1.w = a0[0];
+	a1 = 0x1440a8;
+	d1 <<= 2
+	a0 = a1[d1];
+	if(a0) {
+		a0 = _001e54(1664, a0)
+		return _001e76();
+	} else {
+		*(0xa11100) = 256;
+		d7 = 0x5000003;
+		d6.w = 0;
+		d5.w = 1342;
+		_0011d6(d5, d6, d7);
+		*(0xa11100) = 0;
+	}
+}
+
+void _007e7e();
+void _007ec6();
+void _007efc();
+
+void _007f40() {
+	d2 = 29;
+	do {
+		d1 = 0;
+		d1.b = *(a1)
+		a1 += 1;
+		d1 += 1;
+		*(fp).w = d1;
+		fp += 2;		
+	} while(d2--);
+}
+
+void _007f54();
+
+void _008000();
+
+uint16_t _00806c[0xaa - 0x6c];
+
+void _0080aa();
+void _008212();
+void _00824a() {
+	d0.w = _ff2006[0];
+	d0 &= 63;
+	a0 = _008262[d0]
+	goto *a0;
+}
+
+void *(_008262)() [7] = {
+	_00827e,
+	_0083ca,
+	_0084b6,
+	_0085bc,
+	_0086b8,
+	_008798,
+	_008972,
+}
+
+void _00827e() {
+	_ff2006[0] |= 1<<7;
+	if(_ff2006[0]) goto _008394;
+	if(_ff0502[0] == 1) goto _0082d0;
+	if(_ff0502[0] == 6) goto _0082d0;
+	if(_ff0502[0] == 10) goto _0082d0;
+	if(_ff0502[0] == 14) goto _0082d0;
+	if(_ff0502[0] == 21) goto _0082d0;
+	_ff2006[0] = 8;
+}
+
+
+///// bunch of functions that look like they set up different kinds of screens
+
+void _0082d0() {
+	//.....
+
+	_ff2030[0].w = 0;
+	_005716();
+	_0015a0();
+	_ff010e[0].w = 28;
+	_ff2006[0].w = 4;
+}
+
+void _0083ca() {
+	//....
+
+	d0.w = 160;
+	_027f5e(d0);
+	_ff2030[0].w = 0;
+	_005716();
+	_0015a0();
+	_ff010e[0].w = 28;
+	_ff2006[0].w = 8;
+}
+
+void _0084b6() {
+	//....
+
+	_ff2030[0].w = 0;
+	_005716();
+	_0015a0();
+	_ff010e[0].w = 28;
+	_ff2006[0].w = 12;
+}
+
+void _0085bc();
+void _0086b8();
+void _008798();
+void _0088e8();
+
+void _0089a2(d7, a1, a2) {
+	do {
+		d2 = 0x801e;
+		d1 = 0;
+		d1.b = *(a2++);
+		d1 += d2;
+		*(a1).w = d1;
+		a1+=2;		
+	}while(d7--)
+}
+
+void _0089b6() {
+	_0015a0();
+	d7 = 0x63c00000;
+	d6.w = 0;
+	d5.w = 0x3fff;
+	_0011d6(d5, d6, d7);
+	_00158e();
+}
+
+void (*_0089d8)()[19] {
+	_008aac,
+	_008ab4,
+	_008c2c,
+	_008dc8,
+	_008f64,
+	_009014,
+	_00910a,
+	_00918a,
+	_0091d4,
+	_009244,
+	_0093d6,
+	_0094f8,
+	_0095c4,
+	_009680,
+	_00985e,
+	_009a6c,
+	_009ba6,
+	_009caa,
+	_009d92,
+}
+
+void _008a24();
+
+void _008aac() {
+	_ff2032[0] += 2;
+}
+
+void _008ab4();
+void _008c2c();
+void _008dc8();
+
+////////////////~~~~~~~~~~~~~~~~~~~~~~////////////////////
+
+void _03a3a2() {
+	a0 = _1d0dcc;
+	d0.w = *_ff2082;
+	//d0 <<= 2;
+	a0 = _1d0dcc[d0];
+	sr |= 0x0700; // disable ints
+	VDP_CTRL = 0x70000001; // VRAM write, address 0x7000
+	_001e76();
+	sr &= 0xf8ff; // enable ints
+}
+
+void _03a3ce() {
+	a0 = _1d3200;
+	d0.w = *_ff2082;
+	//d0 <<= 2;
+	a0 = _1d3200[d0];
+	d0.w = 1;
+	d0 <<= 13;
+	d0.w &= 0x6000;
+	d0.w += 0x0380;
+	_035bf2(d0, a0);
+}
+
+void _03a426_CRAM_VSRAM_clear() {
+	_03a46a();
+	*VDP_CTRL = 0xc0000000; // CRAM write, address 0
+	d1 = 63;
+	do {
+		*VDP_DATA = 0;
+	} while (d1--);
+	*VDP_CTRL = 0x40000010; // VSRAM write, address 0
+	d1 = 39;
+	do {
+		*VDP_DATA.w = 0;
+	} while (d1--);
+	_0011fc();
+
+}
+
+void _03a46a() {
+	*_ff2000.w = {
+		4, 0x14, 0x30, 0x28, 0x7, 0x7e, 0, 0,
+		0, 0, 0, 0, 0x81, 0x3c, 0, 2,
+		1, 0, 0
+	}
+	_035604();
+}
+
+void _03a50a_VRAM_Clear_a000_bfff() { // clear VRAM 0xe000 through 0xffff
+	sr |= 0x700; // I2 + I1 + I0: disable ints
+	*VDP_CTRL.w = *_ff0412 | 0x10;
+	*VDP_CTRL.w = 0x8f01; // Register F: autoincrement of 1
+	*VDP_CTRL = 0x93ff941f; // DMA Length: 0x1fff
+	*VDP_CTRL.w = 0x9780; // DMA Source: VRAM fill
+	*VDP_CTRL = 0x40000083; // VRAM write, address 0xa000
+	*VDP_DATA.w = 0;
+	while (VDP_STATUS&1);
+	*VDP_CTRL.w = 0x8f02; // Register F: autoincrement of 2
+	*VDP_CTRL.w = *_ff0412;
+	sr &= 0xf8ff; // reenable ints
+}
+
+void _03a554_VRAM_Clear_c000_efff() { // clear VRAM 0xe000 through 0xffff
+	sr |= 0x700; // I2 + I1 + I0: disable ints?
+	*VDP_CTRL.w = *_ff0412 | 0x10;
+	*VDP_CTRL.w = 0x8f01; // Register F: autoincrement of 1
+	*VDP_CTRL = 0x93ff941f; // DMA Length: 0x1fff
+	*VDP_CTRL.w = 0x9780; // DMA Source: VRAM fill
+	*VDP_CTRL = 0x60000083; // VRAM write, address 0xc000
+	*VDP_DATA.w = 0;
+	while (VDP_STATUS&1);
+	*VDP_CTRL.w = 0x8f02; // Register F: autoincrement of 2
+	*VDP_CTRL.w = *_ff0412;
+	sr &= 0xf8ff; // reenable ints
+}
+
+
+void _03a59e_VRAM_Clear_e000_ffff() { // clear VRAM 0xe000 through 0xffff
+	sr |= 0x700; // I2 + I1 + I0: disable ints?
+	*VDP_CTRL.w = *_ff0412 | 0x10;
+	*VDP_CTRL.w = 0x8f01; // Register F: autoincrement of 1
+	*VDP_CTRL = 0x93ff941f; // DMA Length: 0x1fff
+	*VDP_CTRL.w = 0x9780; // DMA Source: VRAM fill
+	*VDP_CTRL = 0x70000083; // VRAM write, address 0xd000
+	*VDP_DATA.w = 0;
+	while (VDP_STATUS&1);
+	*VDP_CTRL.w = 0x8f02; // Register F: autoincrement of 2
+	*VDP_CTRL.w = *_ff0412;
+	sr &= 0xf8ff; // reenable ints
+}
+
+uint16_t _03a5e8[];
+
+void _03a654() {
+	*_ff0100 |= 0x80;
+	if(*_ff0100) {
+		_038c38();
+	} else {
+		_038c0c();
+	}
+}
+
+void _03a670() {
+	d0.b = *_a10001;
+	if ((d0 & 0x80) && !(d0 & 0x40)) {
+		sr = 0x2700;
+		_00119a();
+		_0015b6();
+		_00167a();
+		nop();
+		nop();
+		nop();
+		*VDP_CTRL = 0x8134; // Register 1: VINT, DMA, NTSC, SMS display
+		*VDP_CTRL = 0xc0000000; // set vram address pointer to 0
+		a0 = _03a898;
+		fp = VDP_DATA;
+		d5 = 15;
+		do {
+			*fp = *a0;
+			fp += 4; a0 += 4;
+		} while (d5--);
+		nop();
+		_00af8c();
+		a0 = _03a73a;
+		_03a6fa(a0);
+		*VDP_CTRL = 0x811c; // Register 1: DMA, NTSC, MD mode
+		sr = 0x8192;
+		while(true) {nop(); nop();}
+	}
+}
+void _03a6fa(a0) { // writes VDP
+	nop();
+	nop();
+	nop();
+	d0 = *(a0); a0+=4;
+	d7.w = *(a0); a0+=2;
+	d6.w = *(a0); a0+=2;
+	d5.w = *(a0); a0+=2;
+	do {
+		*VDP_CTRL = d0;
+		d4.w = d6;
+		do {
+			d1 = 0;
+			d1.b = *(a0++);
+			d1.w -= 32;
+			if(d1) {
+				d1.w += 9;
+			}
+			d1.w += d7;
+			VDP_DATA.w = d1;		
+		} while (d4--);
+		d0 += 0x1000000;		
+	} while(d5--);
+}
+
+/* end of code */
 
