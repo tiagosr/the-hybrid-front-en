@@ -199,9 +199,12 @@ void _001d76();
 void _001e16();
 void _001e54();
 
-void _001e76() { // this looks like a decoder
+void _001e76_Character_Block_Decoder() {
+	////////////////// CHARACTER BLOCK DECODER
+	// at least for the intro
+	// not trivial to decompile.
 	push(d0,d1,d2,d3,d4,d5,d6,d7,a0,a1,a3,a4,a5)
-	a3 = _001f08;
+	a3 = 0;
 	a4 = VDP_DATA;
 	*_ff011e &= 0xfffffffe; // clear bit 0
 	goto _001e9a:
@@ -210,7 +213,7 @@ _001e9a:
 	a1 = _ff3000;
 	d2.w = *(a0); a0 += 2;
 	if(carry_clear(d2.w += d2.w)) {
-		a3 += 10;
+		a3 += 1;
 	}
 	d2.w += d2.w;
 	d2.w += d2.w;
@@ -220,16 +223,60 @@ _001e9a:
 	d4 = 0;
 	_001f40(d2, d3, d4, a0, a1);
 	_001fc2();
-	d0 = 8;
-	d1 = _001fcc(d0, d5, d6);
-	if(d1.w < 252) {
-		//d1.w += d1.w;
-		d0 = _ff3000[d1.w];
-		sign_extend_word(d0);
-		_001fe0();
-	}// _001efa
-
-	pop(d0,d1,d2,d3,d4,d5,d6,d7,a0,a1,a3,a4,a5)
+	while(true) {
+		d0 = 8;
+		d1 = _001fcc(d0, d5, d6);
+		if(d1.w < 252) {
+			//d1.w += d1.w;
+			d0 = _ff3000[d1.w];
+			sign_extend_word(d0);
+			d1.w = _001fe0();
+			d1.b = _ff3000[d1.w+1];
+			// picking nibbles off of a byte
+_001eda:
+			d0.w = d1.w;
+			d1.w &= 0x0f;
+			d0.w &= 0xf0;
+			d0.w >>= 4;
+			while (d0--) {
+				d4.w <<= 4;
+				d4.b |= d0.b;
+				if(--d3.w) {
+					switch(a3) {
+					0:
+						*a4 = d4;
+						a5.w -= 1;
+						d4.w = a5.w;
+						if (d4 != 0) goto _001ef0;
+						break;
+					1:
+						*a4 = d4;
+						a5.w -= 1;
+						d4.w = a5.w;
+						if(d4 != 0) goto _001ef0;
+						break;
+					2:
+						d2 ^= d4;
+						*(a4).w = d2.w; a4+=2;
+						a5.w -= 1;
+						d4.w = a5.w;
+						if(d4!=0) goto _001ef0;
+					}
+					goto _001f32_exit;
+_001ef0:
+					d4 = 0;
+					d3 = 8;
+				}
+			}
+		} else break;	
+	}
+_001f00:
+	d0 = 7;
+	_001fdc(d0, d5, d6);
+	goto _001eda;
+_001f32_exit:
+	bclr(*_ff011e, 0);
+	pop(d0,d1,d2,d3,d4,d5,d6,d7,a0,a1,a3,a4,a5);
 }
 
 void _001f40(d2, d3, d4, a0, a1);
@@ -777,7 +824,7 @@ void _007e2c() { // z80 communication? sound code?
 	a0 = a1[d1];
 	if(a0) {
 		a0 = _001e54(1664, a0)
-		return _001e76();
+		return _001e76_Character_Block_Decoder();
 	} else {
 		*(0xa11100) = 256;
 		d7 = 0x5000003;
@@ -941,7 +988,7 @@ void _03a3a2() {
 	a0 = _1d0dcc[d0];
 	sr |= 0x0700; // disable ints
 	VDP_CTRL = 0x70000001; // VRAM write, address 0x7000
-	_001e76();
+	_001e76_Character_Block_Decoder();
 	sr &= 0xf8ff; // enable ints
 }
 
